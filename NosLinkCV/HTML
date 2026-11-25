@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NôsLink CV - Rastreio de Encomendas</title>
+    <style>
+        :root {
+            --primary: #0056b3;
+            --success: #28a745;
+            --warning: #ffc107;
+            --dark: #212529;
+            --light: #f8f9fa;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #eef2f7;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+        }
+
+        h1 {
+            color: var(--primary);
+            margin-bottom: 5px;
+            font-size: 24px;
+        }
+
+        p.subtitle {
+            color: #6c757d;
+            margin-bottom: 25px;
+            font-size: 14px;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #ced4da;
+            border-radius: 6px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--primary);
+        }
+
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: #004085;
+        }
+
+        /* Área de Resultado */
+        .result-card {
+            display: none;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: left;
+            background-color: var(--light);
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+        }
+
+        .status-aguardando_alocacao { background-color: #6c757d; }
+        .status-alocado { background-color: var(--primary); }
+        .status-em_transito { background-color: var(--warning); color: #000; }
+        .status-disponivel { background-color: var(--success); }
+
+        .info-row {
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .info-row strong {
+            color: var(--dark);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>NôsLink CV</h1>
+    <p class="subtitle">Sistema de Logística Marítima Interilhas</p>
+
+    <div class="search-box">
+        <input type="text" id="codigoRastreio" placeholder="Ex: NL-8472-CV" maxlength="12">
+        <button onclick="buscarEncomenda()">Buscar</button>
+    </div>
+
+    <!-- Card de Exibição dos Dados do Banco -->
+    <div id="resultado" class="result-card">
+        <div id="statusBadge" class="status-badge">Em Trânsito</div>
+        <div class="info-row"><strong>Código:</strong> <span id="resCodigo">-</span></div>
+        <div class="info-row"><strong>Origem:</strong> <span id="resOrigem">-</span></div>
+        <div class="info-row"><strong>Destino:</strong> <span id="resDestino">-</span></div>
+        <div class="info-row"><strong>Peso:</strong> <span id="resPeso">-</span></div>
+        <div class="info-row"><strong>Última Atualização:</strong> <span id="resAtualizado">-</span></div>
+    </div>
+</div>
+
+<script>
+    // Esta função simula a requisição que o HTML faz para a sua API conectar no PostgreSQL
+    async function buscarEncomenda() {
+        const codigo = document.getElementById('codigoRastreio').value.trim();
+        const resultadoCard = document.getElementById('resultado');
+
+        if (!codigo) {
+            alert('Por favor, digite um código de rastreio válido.');
+            return;
+        }
+
+        // --- SIMULAÇÃO DE RESPOSTA DA API DO BANCO DE DADOS ---
+        // Na vida real, você usaria: fetch('https://sua-api.noslink.cv/pedidos/' + codigo)
+        const mockBancoDeDados = {
+            'NL-1234-CV': {
+                codigo: 'NL-1234-CV',
+                status: 'em_transito',
+                statusTexto: 'Em Trânsito (No Navio)',
+                origem: 'Porto da Praia (Santiago)',
+                destino: 'Porto Grande (São Vicente)',
+                peso: '150.00 kg',
+                atualizado: '15/07/2026 - 02:30'
+            },
+            'NL-9999-CV': {
+                codigo: 'NL-9999-CV',
+                status: 'disponivel',
+                statusTexto: 'Disponível para Recolha',
+                origem: 'Porto de Palmeira (Sal)',
+                destino: 'Porto de Sal Rei (Boa Vista)',
+                peso: '45.50 kg',
+                atualizado: '14/07/2026 - 18:15'
+            }
+        };
+
+        const dados = mockBancoDeDados[codigo.toUpperCase()];
+
+        if (dados) {
+            // Preenche o HTML com as informações vindas do banco
+            document.getElementById('resCodigo').innerText = dados.codigo;
+            document.getElementById('resOrigem').innerText = dados.origem;
+            document.getElementById('resDestino').innerText = dados.destino;
+            document.getElementById('resPeso').innerText = dados.peso;
+            document.getElementById('resAtualizado').innerText = dados.atualizado;
+
+            // Altera o estilo do Badge de Status dinamicamente
+            const badge = document.getElementById('statusBadge');
+            badge.className = 'status-badge status-' + dados.status;
+            badge.innerText = dados.statusTexto;
+
+            resultadoCard.style.display = 'block';
+        } else {
+            resultadoCard.style.display = 'none';
+            alert('Encomenda não encontrada no sistema NôsLink. Verifique o código e tente novamente.');
+        }
+    }
+</script>
+
+</body>
+</html>

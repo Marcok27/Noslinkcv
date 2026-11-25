@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  # Serviço do Banco de Dados PostgreSQL (v16)
+  postgres:
+    image: postgres:16-alpine
+    container_name: noslink-db
+    environment:
+      POSTGRES_DB: noslink
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: SecretPassword123
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./schema.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d noslink"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Painel Web de Monitorização (PgHero) - Acessível em http://localhost:8080
+  pghero:
+    image: ankane/pghero
+    container_name: noslink-monitor
+    ports:
+      - "8080:8080"
+    environment:
+      DATABASE_URL: postgres://admin:SecretPassword123@postgres:5432/noslink
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+# Volume persistente para não perderes os dados quando o Docker for desligado
+volumes:
+  pgdata:
