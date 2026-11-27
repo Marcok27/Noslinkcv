@@ -1,7 +1,7 @@
 # 🇨🇻 NôsLinkCV — Infraestrutura Digital do Comércio e Logística Inter-Ilhas
 
 ![Status](https://img.shields.io/badge/Status-MVP%20Funcional%20Ativo-success?style=for-the-badge)
-![Cobertura](https://img.shields.io/badge/Cobertura-9%20Ilhas%20Habitadas-blue?style=for-the-badge)
+![Cobertura](https://marcok27.github.io/Noslinkcv/)
 ![Stack](https://img.shields.io/badge/Stack-React%20%7C%20Node.js%20%7C%20PostgreSQL%20%7C%20Supabase-informational?style=for-the-badge)
 
 > **"Nove ilhas. Um mercado. Uma só economia digital."**
